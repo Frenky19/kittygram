@@ -9,10 +9,23 @@ from .models import Achievement, AchievementCat, Cat
 
 
 class Hex2NameColor(serializers.Field):
+    """Кастомное поле для преобразования HEX-кода цвета в название цвета.
+
+    Особенности:
+    - При вводе принимает HEX-формат (например, #ff0000)
+    - При выводе возвращает название цвета (например, 'red')
+    - Использует библиотеку webcolors для конвертации
+
+    Исключения:
+    - ValidationError: если цвет не найден в CSS3-палитре
+    """
+
     def to_representation(self, value):
+        """Возвращает исходное значение (название цвета) для API response."""
         return value
 
     def to_internal_value(self, data):
+        """Конвертирует HEX-код в название цвета перед сохранением."""
         try:
             data = webcolors.hex_to_name(data)
         except ValueError:
@@ -21,6 +34,8 @@ class Hex2NameColor(serializers.Field):
 
 
 class AchievementSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Achievement с переименованным полем."""
+
     achievement_name = serializers.CharField(source='name')
 
     class Meta:
@@ -29,6 +44,8 @@ class AchievementSerializer(serializers.ModelSerializer):
 
 
 class Base64ImageField(serializers.ImageField):
+    """Кастомное поле для обработки изображений в формате base64."""
+
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):
             format, imgstr = data.split(';base64,')
@@ -40,6 +57,20 @@ class Base64ImageField(serializers.ImageField):
 
 
 class CatSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Cat.
+
+    Особенности:
+    - Динамическое поле 'age' (вычисляется из года рождения)
+    - Поддержка base64 для загрузки изображений
+    - Кастомная обработка достижений через nested serializer
+    - Преобразование цвета через Hex2NameColor
+
+    Поля:
+    - image_url: URL загруженного изображения (read-only)
+    - achievements: список достижений через AchievementSerializer
+    - owner: устанавливается автоматически из контекста запроса
+    """
+
     achievements = AchievementSerializer(required=False, many=True)
     color = Hex2NameColor()
     age = serializers.SerializerMethodField()
@@ -58,14 +89,24 @@ class CatSerializer(serializers.ModelSerializer):
         read_only_fields = ('owner',)
 
     def get_image_url(self, obj):
+        """Генерирует абсолютный URL для изображения."""
         if obj.image:
             return obj.image.url
         return None
 
     def get_age(self, obj):
+        """Вычисляет возраст кошки на основе года рождения."""
         return dt.datetime.now().year - obj.birth_year
 
     def create(self, validated_data):
+        """
+        Создание кошки с обработкой достижений.
+
+        Логика:
+        - Если достижения не переданы - создает простую запись
+        - При наличии достижений создает связи через AchievementCat
+        - Обрабатывает существующие/новые достижения
+        """
         if 'achievements' not in self.initial_data:
             cat = Cat.objects.create(**validated_data)
             return cat
@@ -81,6 +122,13 @@ class CatSerializer(serializers.ModelSerializer):
         return cat
 
     def update(self, instance, validated_data):
+        """
+        Обновление кошки с полной заменой достижений.
+
+        Особенности:
+        - Поле achievements полностью перезаписывается
+        - Изображение обновляется только при передаче нового
+        """
         instance.name = validated_data.get('name', instance.name)
         instance.color = validated_data.get('color', instance.color)
         instance.birth_year = validated_data.get(

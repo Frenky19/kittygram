@@ -1,27 +1,34 @@
-version: '3'
-
 volumes:
   pg_data:
   static:
+  media:
 
 services:
   db:
     image: postgres:13
+    env_file: .env
+    command: >
+      sh -c "python manage.py collectstatic --no-input &&
+      gunicorn --bind 0.0.0.0:8080 kittygram_backend.wsgi"
     volumes:
       - pg_data:/var/lib/postgresql/data
   backend:
     build: ./backend/
     env_file: .env
+    volumes:
+      - static:/app/backend_static/
+      - media:/app/media
   frontend:
     env_file: .env
     build: ./frontend/
-    command: cp -r /app/build/. /static/
+    command: cp -r /app/build/. /frontend_static/
     volumes:
-      - static:/static
+      - static:/frontend_static
   gateway:
     build: ./nginx/
     env_file: .env
     ports:
-      - 9000:80
+      - 8080:80
     volumes:
-      - static:/static
+      - static:/var/www/static
+      - media:/var/www/media

@@ -1,0 +1,7 @@
+db.sqlite
+db.sqlite.bak
+env
+myenv
+venv
+.venv
+.git

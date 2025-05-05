@@ -1,26 +1,85 @@
-#  Как работать с репозиторием финального задания
+#   Docker контейнеры и CI/CD для Kittygram
 
-## Что нужно сделать
+## Стек технологий
 
-Настроить запуск проекта Kittygram в контейнерах и CI/CD с помощью GitHub Actions
+![Django](https://img.shields.io/badge/Django-092E20?logo=django&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?logo=postgresql&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)
+![Nginx](https://img.shields.io/badge/Nginx-009639?logo=nginx&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?logo=github-actions&logoColor=white)
 
-## Как проверить работу с помощью автотестов
+## Устанавливаем Docker Compose на сервер
 
-В корне репозитория создайте файл tests.yml со следующим содержимым:
-```yaml
-repo_owner: ваш_логин_на_гитхабе
-kittygram_domain: полная ссылка (https://доменное_имя) на ваш проект Kittygram
-taski_domain: полная ссылка (https://доменное_имя) на ваш проект Taski
-dockerhub_username: ваш_логин_на_докерхабе
+Поочерёдно выполните на сервере команды для установки Docker и Docker Compose для Linux.
+
+```
+sudo apt update
+sudo apt install curl
+curl -fSL https://get.docker.com -o get-docker.sh
+sudo sh ./get-docker.sh
+sudo apt install docker-compose-plugin
 ```
 
-Скопируйте содержимое файла `.github/workflows/main.yml` в файл `kittygram_workflow.yml` в корневой директории проекта.
+Скопируйте на сервер в директорию проекта файл docker-compose.yml. Сделать это можно, например, при помощи утилиты SCP (secure copy) — она предназначена для копирования файлов между компьютерами или создайте копию файла вручную. Зайдите на своём компьютере в директорию проекта и выполните команду копирования:
 
-Для локального запуска тестов создайте виртуальное окружение, установите в него зависимости из backend/requirements.txt и запустите в корневой директории проекта `pytest`.
+```
+scp -i path_to_SSH/SSH_name docker-compose.yml \
+    username@server_ip:/home/username/<директория проекта>/docker-compose.yml 
+```
 
-## Чек-лист для проверки перед отправкой задания
+- path_to_SSH — путь к файлу с SSH-ключом;
+- SSH_name — имя файла с SSH-ключом (без расширения);
+- username — ваше имя пользователя на сервере;
+- server_ip — IP вашего сервера.
 
-- Проект Taski доступен по доменному имени, указанному в `tests.yml`.
-- Проект Kittygram доступен по доменному имени, указанному в `tests.yml`.
-- Пуш в ветку main запускает тестирование и деплой Kittygram, а после успешного деплоя вам приходит сообщение в телеграм.
-- В корне проекта есть файл `kittygram_workflow.yml`.
+
+Скопируйте файл .env на сервер, в директорию проекта:
+
+```
+scp -i path_to_SSH/SSH_name .env \
+    username@server_ip:/home/username/<директория проекта>/.env 
+```
+
+На сервере в редакторе nano откройте конфиг Nginx: sudo nano /etc/nginx/sites-enabled/default. Измените все настройки location на одну в секции server.
+
+```
+location / {
+        proxy_set_header Host $http_host;
+        proxy_pass http://127.0.0.1:9000;
+    }
+```
+
+Перезагрузите конфиг Nginx:
+
+```
+sudo service nginx reload 
+```
+
+## Workflow для обновления проекта на сервере
+
+Чтобы обновить проект на продакшене, нужно:
+
+- выполнить на команду docker compose pull, чтобы скачать с Docker Hub на сервер обновлённые образы для контейнеров;
+- перезапустить контейнеры из обновлённых образов.
+
+При выполнении этих задач «вручную» разработчик соединяется по SSH с сервером и отправляет на сервер команды docker compose pull, docker compose down и docker compose up. После этого — выполняет команды для миграций и сборки статики. При работе с GitHub Actions эти действия должен выполнить раннер, читая инструкции из workflow.
+
+
+Перейдите в настройки репозитория GitHub — Settings, выберите на панели слева Secrets and Variables → Actions, нажмите New repository secret:
+
+Сохраните переменные:
+
+DOCKER_USERNAME - Логин Docker Hub
+DOCKER_PASSWORD - Пароль Docker Hub
+HOST - IP сервера
+USER - SSH пользователь
+SSH_KEY - Приватный ключ SSH
+SSH_PASSPHRASE - Пасфраза для ключа
+TELEGRAM_TO - ID чата Telegram
+TELEGRAM_TOKEN - Токен бота Telegram
+
+
+Ваш продакшен-сервер будет получать команды не с вашего компьютера, а от сервера GitHub Actions. 
+
+Сделайте коммит и пуш в репозиторий и проверьте, что все шаги выполнились.

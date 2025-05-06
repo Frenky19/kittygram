@@ -11,7 +11,7 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?logo=github-actions&logoColor=white)
 
-## 📋 Требования
+## Требования
 
 - Python 3.9
 - Node.js 18+
@@ -20,7 +20,7 @@
 - SSH-доступ к серверу
 - Telegram-бот (для уведомлений)
 
-## ⚙️ Настройка секретов
+## Настройка секретов
 
 Добавьте в Secrets репозитория:
 
@@ -28,9 +28,9 @@
 DOCKER_USERNAME - Логин Docker Hub
 DOCKER_PASSWORD - Пароль Docker Hub
 HOST - IP сервера
-USER - SSH пользователь
+USER - Логин пользователя сервера
 SSH_KEY - Приватный ключ SSH
-SSH_PASSPHRASE - Пасфраза для ключа
+SSH_PASSPHRASE - Код для ключа
 TELEGRAM_TO - ID чата Telegram
 TELEGRAM_TOKEN - Токен бота Telegram
 ```
@@ -47,7 +47,7 @@ sudo sh ./get-docker.sh
 sudo apt install docker-compose-plugin
 ```
 
-Скопируйте на сервер в директорию проекта файл docker-compose.production.yml. Сделать это можно, например, при помощи утилиты SCP (secure copy) — она предназначена для копирования файлов между компьютерами или создайте копию файла вручную. Зайдите на своём компьютере в директорию проекта и выполните команду копирования:
+- Скопируйте на сервер в директорию проекта файл docker-compose.production.yml. Сделать это можно, например, при помощи утилиты SCP (secure copy) — она предназначена для копирования файлов между компьютерами или создайте копию файла вручную. Зайдите на своём компьютере в директорию проекта и выполните команду копирования:
 
 ```
 scp -i path_to_SSH/SSH_name docker-compose.production.yml \
@@ -56,18 +56,18 @@ scp -i path_to_SSH/SSH_name docker-compose.production.yml \
 
 - path_to_SSH — путь к файлу с SSH-ключом;
 - SSH_name — имя файла с SSH-ключом (без расширения);
-- username — ваше имя пользователя на сервере;
+- username — ваш логин на сервере;
 - server_ip — IP вашего сервера.
 
 
-Скопируйте файл .env на сервер, в директорию проекта:
+- Скопируйте файл .env на сервер, в директорию проекта:
 
 ```
 scp -i path_to_SSH/SSH_name .env \
     username@server_ip:/home/username/<директория проекта>/.env 
 ```
 
-На сервере в редакторе nano откройте конфиг Nginx: sudo nano /etc/nginx/sites-enabled/default. Измените все настройки location на одну в секции server.
+- На сервере в редакторе nano откройте конфиг Nginx: sudo nano /etc/nginx/sites-enabled/default. Измените все настройки location на одну в секции server.
 
 ```
 location / {

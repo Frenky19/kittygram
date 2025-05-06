@@ -1,5 +1,7 @@
 #   Docker контейнеры и CI/CD для Kittygram
 
+Проект для обмена фотографиями котиков.
+
 ## Стек технологий
 
 ![Django](https://img.shields.io/badge/Django-092E20?logo=django&logoColor=white)
@@ -8,6 +10,30 @@
 ![Nginx](https://img.shields.io/badge/Nginx-009639?logo=nginx&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?logo=github-actions&logoColor=white)
+
+## 📋 Требования
+
+- Python 3.9
+- Node.js 18+
+- Docker
+- Аккаунт на Docker Hub
+- SSH-доступ к серверу
+- Telegram-бот (для уведомлений)
+
+## ⚙️ Настройка секретов
+
+Добавьте в Secrets репозитория:
+
+```
+DOCKER_USERNAME - Логин Docker Hub
+DOCKER_PASSWORD - Пароль Docker Hub
+HOST - IP сервера
+USER - SSH пользователь
+SSH_KEY - Приватный ключ SSH
+SSH_PASSPHRASE - Пасфраза для ключа
+TELEGRAM_TO - ID чата Telegram
+TELEGRAM_TOKEN - Токен бота Telegram
+```
 
 ## Устанавливаем Docker Compose на сервер
 
@@ -21,11 +47,11 @@ sudo sh ./get-docker.sh
 sudo apt install docker-compose-plugin
 ```
 
-Скопируйте на сервер в директорию проекта файл docker-compose.yml. Сделать это можно, например, при помощи утилиты SCP (secure copy) — она предназначена для копирования файлов между компьютерами или создайте копию файла вручную. Зайдите на своём компьютере в директорию проекта и выполните команду копирования:
+Скопируйте на сервер в директорию проекта файл docker-compose.production.yml. Сделать это можно, например, при помощи утилиты SCP (secure copy) — она предназначена для копирования файлов между компьютерами или создайте копию файла вручную. Зайдите на своём компьютере в директорию проекта и выполните команду копирования:
 
 ```
-scp -i path_to_SSH/SSH_name docker-compose.yml \
-    username@server_ip:/home/username/<директория проекта>/docker-compose.yml 
+scp -i path_to_SSH/SSH_name docker-compose.production.yml \
+    username@server_ip:/home/username/<директория проекта>/docker-compose.production.yml 
 ```
 
 - path_to_SSH — путь к файлу с SSH-ключом;
@@ -56,30 +82,24 @@ location / {
 sudo service nginx reload 
 ```
 
-## Workflow для обновления проекта на сервере
+## Деплой
 
-Чтобы обновить проект на продакшене, нужно:
+После пуша в ветку main:
 
-- выполнить на команду docker compose pull, чтобы скачать с Docker Hub на сервер обновлённые образы для контейнеров;
-- перезапустить контейнеры из обновлённых образов.
+- Автоматически запускаются тесты
 
-При выполнении этих задач «вручную» разработчик соединяется по SSH с сервером и отправляет на сервер команды docker compose pull, docker compose down и docker compose up. После этого — выполняет команды для миграций и сборки статики. При работе с GitHub Actions эти действия должен выполнить раннер, читая инструкции из workflow.
+- Собираются и публикуются Docker-образы
 
+- Разворачивается на сервере через docker-compose
 
-Перейдите в настройки репозитория GitHub — Settings, выберите на панели слева Secrets and Variables → Actions, нажмите New repository secret:
+- При успехе - отправляется уведомление в Telegram
 
-Сохраните переменные:
+## Структура проекта
 
-DOCKER_USERNAME - Логин Docker Hub
-DOCKER_PASSWORD - Пароль Docker Hub
-HOST - IP сервера
-USER - SSH пользователь
-SSH_KEY - Приватный ключ SSH
-SSH_PASSPHRASE - Пасфраза для ключа
-TELEGRAM_TO - ID чата Telegram
-TELEGRAM_TOKEN - Токен бота Telegram
-
-
-Ваш продакшен-сервер будет получать команды не с вашего компьютера, а от сервера GitHub Actions. 
-
-Сделайте коммит и пуш в репозиторий и проверьте, что все шаги выполнились.
+```
+.
+├── backend/    # Backend приложение Django
+├── frontend/   # Frontend приложение React
+├── nginx/      # Конфигурация шлюза nginx
+└── docker-compose.production.yml
+```

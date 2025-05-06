@@ -103,3 +103,6 @@ sudo service nginx reload
 ├── nginx/      # Конфигурация шлюза nginx
 └── docker-compose.production.yml
 ```
+
+## Автор  
+[Андрей Головушкин / Andrey Golovushkin](https://github.com/Frenky19)

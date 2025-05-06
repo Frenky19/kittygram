@@ -47,7 +47,7 @@ sudo sh ./get-docker.sh
 sudo apt install docker-compose-plugin
 ```
 
-- Скопируйте на сервер в директорию проекта файл docker-compose.production.yml. Сделать это можно, например, при помощи утилиты SCP (secure copy) — она предназначена для копирования файлов между компьютерами или создайте копию файла вручную. Зайдите на своём компьютере в директорию проекта и выполните команду копирования:
+Скопируйте на сервер в директорию проекта файл docker-compose.production.yml. Сделать это можно, например, при помощи утилиты SCP (secure copy) — она предназначена для копирования файлов между компьютерами или создайте копию файла вручную. Зайдите на своём компьютере в директорию проекта и выполните команду копирования:
 
 ```
 scp -i path_to_SSH/SSH_name docker-compose.production.yml \
@@ -60,14 +60,14 @@ scp -i path_to_SSH/SSH_name docker-compose.production.yml \
 - server_ip — IP вашего сервера.
 
 
-- Скопируйте файл .env на сервер, в директорию проекта:
+Скопируйте файл .env на сервер, в директорию проекта:
 
 ```
 scp -i path_to_SSH/SSH_name .env \
     username@server_ip:/home/username/<директория проекта>/.env 
 ```
 
-- На сервере в редакторе nano откройте конфиг Nginx: sudo nano /etc/nginx/sites-enabled/default. Измените все настройки location на одну в секции server.
+На сервере в редакторе nano откройте конфиг Nginx: sudo nano /etc/nginx/sites-enabled/default. Измените все настройки location на одну в секции server.
 
 ```
 location / {

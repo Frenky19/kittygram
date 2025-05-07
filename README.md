@@ -2,6 +2,8 @@
 
 Проект для обмена фотографиями котиков.
 
+[![Main Kittygram workflow](https://github.com/Frenky19/kittygram/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/Frenky19/kittygram/actions/workflows/main.yml)
+
 ## Стек технологий
 
 ![Django](https://img.shields.io/badge/Django-092E20?logo=django&logoColor=white)

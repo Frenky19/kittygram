@@ -2,7 +2,7 @@
 
 Проект для обмена фотографиями котиков.
 
-[![Main Kittygram workflow](https://github.com/Frenky19/kittygram/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/Frenky19/kittygram/actions/workflows/main.yml)
+[![Kittygram Workflow](https://github.com/Frenky19/kittygram/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/Frenky19/kittygram/actions/workflows/main.yml)
 
 ## Стек технологий
 

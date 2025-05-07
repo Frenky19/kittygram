@@ -14,7 +14,7 @@ DEBUG = True
 
 # DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'testserver')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*')
 
 INSTALLED_APPS = [
     'django.contrib.admin',

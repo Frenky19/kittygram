@@ -58,7 +58,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'kittygram_backend.wsgi.application'
 
-
+# Установите в файле .env переменную SQLITE=False, чтобы использовать бд Sqlite
 if os.getenv('SQLITE', 'False') == 'True':
     DATABASES = {
         'default': {

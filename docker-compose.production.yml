@@ -25,7 +25,7 @@ services:
     image: frenky1919/kittygram_gateway
     env_file: .env
     ports:
-      - 9000:80
+      - 9001:80
     volumes:
       - static:/staticfiles
       - media:/media

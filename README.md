@@ -1,6 +1,6 @@
 #   Docker контейнеры и CI/CD для Kittygram
 
-[Проект для обмена фотографиями котиков.](https://pussygram.hopto.org/)
+[Проект для обмена фотографиями котиков.](https://pussygram.ru/)
 
 [![Kittygram Workflow](https://github.com/Frenky19/kittygram/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/Frenky19/kittygram/actions/workflows/main.yml)
 

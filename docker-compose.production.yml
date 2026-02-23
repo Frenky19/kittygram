@@ -9,18 +9,21 @@ services:
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
   backend:
     image: frenky1919/kittygram_backend
     env_file: .env
     volumes:
       - static:/backend_static
       - media:/media
+    restart: unless-stopped
   frontend:
     env_file: .env
     image: frenky1919/kittygram_frontend
     command: cp -r /app/build/. /frontend_static/
     volumes:
       - static:/frontend_static
+    restart: unless-stopped
   gateway:
     image: frenky1919/kittygram_gateway
     env_file: .env
@@ -32,3 +35,4 @@ services:
     depends_on:
       - backend
       - frontend
+    restart: unless-stopped
